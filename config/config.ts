@@ -1,0 +1,1 @@
+export const BACKEND_URL="https://thrift-store-backend-u1vz.onrender.com";
