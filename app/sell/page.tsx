@@ -176,6 +176,7 @@ export default function SellPage() {
     setValidationError(null)
     setIsValidating(true)
 
+    let toastId = toast.loading("Analysing and Uploading Images...");
     try {
       // Validate all images before submission
       const validationPromises = imageFiles.map(file => 
@@ -186,30 +187,30 @@ export default function SellPage() {
       const invalidImages = validationResults.filter(result => !result.isGenuine)
 
       if (invalidImages.length > 0) {
+        toast.dismiss(toastId);
         setValidationError(
           "Some images appear to be invalid or don't match the product description. Please review and update your images."
         )
         return
       }
+      const urls = await getSignedURLs();
+      await uploadFiles(urls);
 
-      // If validation passes, proceed with form submission
-      const formData = new FormData()
-      imageFiles.forEach((file) => {
-        formData.append("images", file)
+      toast.dismiss(toastId);
+      toast.success("Upload Successful!", {
+        description: "Your files have been uploaded successfully.",
+      });
+
+      toastId = toast.loading("Saving Product...");
+
+      product.images = getImageUrls(urls);
+
+
+      const response = await axios.post(`${BACKEND_URL}/api/product`, product, {
+        withCredentials: true,
       })
 
-      // Add other form fields
-      Object.entries(product).forEach(([key, value]) => {
-        formData.append(key, value.toString())
-      })
-
-      const response = await axios.post(`${BACKEND_URL}/api/product`, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      })
-
-      if (response.status === 201) {
+      if (response.status === 200) {
         setSubmitted(true)
         router.push("/dashboard")
       }
@@ -217,6 +218,7 @@ export default function SellPage() {
       console.error("Error submitting form:", error)
       setValidationError("Failed to submit listing. Please try again.")
     } finally {
+      toast.dismiss(toastId);
       setIsValidating(false)
     }
   }
