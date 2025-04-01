@@ -277,6 +277,99 @@ export default function SellPage() {
           <form onSubmit={handleSubmit} className="space-y-8">
             <Card>
               <CardContent className="p-6">
+                <h2 className="text-xl font-semibold mb-4">Photos</h2>
+                <div className="space-y-4">
+                  <div className="grid gap-2">
+                    <div className="flex items-center justify-between">
+                    <Label>Upload Images (max 5)</Label>
+                      {images.length > 0 && (
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={analyzeWithAI}
+                          disabled={isAnalyzing}
+                          className="flex items-center gap-2"
+                        >
+                          {isAnalyzing ? (
+                            <>
+                              <Loader2 className="h-4 w-4 animate-spin" />
+                              Analyzing...
+                            </>
+                          ) : (
+                            <>
+                              <Sparkles className="h-4 w-4" />
+                              Analyze with AI
+                            </>
+                          )}
+                        </Button>
+                      )}
+                    </div>
+
+                    {analysisError && (
+                      <Alert className="mb-4 bg-red-50 border-red-200">
+                        <Info className="h-4 w-4 text-red-600" />
+                        <AlertDescription className="text-red-600">{analysisError}</AlertDescription>
+                      </Alert>
+                    )}
+
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
+                      {images.map((src, index) => (
+                        <div key={index} className="relative aspect-square rounded-md overflow-hidden border bg-muted">
+                          <Image
+                            src={src || "/placeholder.svg"}
+                            alt={`Product image ${index + 1}`}
+                            fill
+                            className="object-cover"
+                          />
+                          <Button
+                            type="button"
+                            variant="destructive"
+                            size="icon"
+                            className="absolute top-1 right-1 h-6 w-6 rounded-full"
+                            onClick={() => handleImageRemove(index)}
+                          >
+                            <X className="h-3 w-3" />
+                          </Button>
+                        </div>
+                      ))}
+
+                      {images.length < 5 && (
+                        <label className="flex flex-col items-center justify-center aspect-square rounded-md border-2 border-dashed border-muted-foreground/25 bg-muted cursor-pointer hover:bg-muted/80 transition-colors">
+                          <div className="flex flex-col items-center justify-center p-4 text-center">
+                            {isValidating ? (
+                              <>
+                                <Loader2 className="h-8 w-8 mb-2 text-muted-foreground animate-spin" />
+                                <span className="text-xs text-muted-foreground">Validating...</span>
+                              </>
+                            ) : (
+                              <>
+                            <Upload className="h-8 w-8 mb-2 text-muted-foreground" />
+                            <span className="text-xs text-muted-foreground">Upload Image</span>
+                              </>
+                            )}
+                          </div>
+                          <input
+                            ref={fileInputRef}
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            onChange={handleImageUpload}
+                            disabled={isValidating}
+                          />
+                        </label>
+                      )}
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-2">
+                      Add up to 5 images of your item. The first image will be the cover image.
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardContent className="p-6">
                 <h2 className="text-xl font-semibold mb-4">Basic Information</h2>
                 <div className="space-y-4">
                   <div className="grid gap-2">
@@ -404,99 +497,6 @@ export default function SellPage() {
                         </Select>
                       </div>
                     )}
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardContent className="p-6">
-                <h2 className="text-xl font-semibold mb-4">Photos</h2>
-                <div className="space-y-4">
-                  <div className="grid gap-2">
-                    <div className="flex items-center justify-between">
-                    <Label>Upload Images (max 5)</Label>
-                      {images.length > 0 && (
-                        <Button
-                          type="button"
-                          variant="outline"
-                          size="sm"
-                          onClick={analyzeWithAI}
-                          disabled={isAnalyzing}
-                          className="flex items-center gap-2"
-                        >
-                          {isAnalyzing ? (
-                            <>
-                              <Loader2 className="h-4 w-4 animate-spin" />
-                              Analyzing...
-                            </>
-                          ) : (
-                            <>
-                              <Sparkles className="h-4 w-4" />
-                              Analyze with AI
-                            </>
-                          )}
-                        </Button>
-                      )}
-                    </div>
-
-                    {analysisError && (
-                      <Alert className="mb-4 bg-red-50 border-red-200">
-                        <Info className="h-4 w-4 text-red-600" />
-                        <AlertDescription className="text-red-600">{analysisError}</AlertDescription>
-                      </Alert>
-                    )}
-
-                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
-                      {images.map((src, index) => (
-                        <div key={index} className="relative aspect-square rounded-md overflow-hidden border bg-muted">
-                          <Image
-                            src={src || "/placeholder.svg"}
-                            alt={`Product image ${index + 1}`}
-                            fill
-                            className="object-cover"
-                          />
-                          <Button
-                            type="button"
-                            variant="destructive"
-                            size="icon"
-                            className="absolute top-1 right-1 h-6 w-6 rounded-full"
-                            onClick={() => handleImageRemove(index)}
-                          >
-                            <X className="h-3 w-3" />
-                          </Button>
-                        </div>
-                      ))}
-
-                      {images.length < 5 && (
-                        <label className="flex flex-col items-center justify-center aspect-square rounded-md border-2 border-dashed border-muted-foreground/25 bg-muted cursor-pointer hover:bg-muted/80 transition-colors">
-                          <div className="flex flex-col items-center justify-center p-4 text-center">
-                            {isValidating ? (
-                              <>
-                                <Loader2 className="h-8 w-8 mb-2 text-muted-foreground animate-spin" />
-                                <span className="text-xs text-muted-foreground">Validating...</span>
-                              </>
-                            ) : (
-                              <>
-                            <Upload className="h-8 w-8 mb-2 text-muted-foreground" />
-                            <span className="text-xs text-muted-foreground">Upload Image</span>
-                              </>
-                            )}
-                          </div>
-                          <input
-                            ref={fileInputRef}
-                            type="file"
-                            accept="image/*"
-                            className="hidden"
-                            onChange={handleImageUpload}
-                            disabled={isValidating}
-                          />
-                        </label>
-                      )}
-                    </div>
-                    <p className="text-xs text-muted-foreground mt-2">
-                      Add up to 5 images of your item. The first image will be the cover image.
-                    </p>
                   </div>
                 </div>
               </CardContent>
