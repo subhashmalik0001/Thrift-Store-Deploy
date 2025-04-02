@@ -22,30 +22,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
-
-interface Product {
-  id: string
-  title: string
-  price: number
-  description: string
-  condition: string
-  category: string
-  owner: {
-    username: string
-    email: string
-    phone: string
-  }
-  location: string
-  postedDate: string
-  views: number
-  isAuction: boolean
-  currentBid: number
-  bidCount: number
-  endTime: string
-  images: string[]
-  contactMethod: "phone" | "email" | "both"
-  meetingLocation: string
-}
+import { Product } from "@/types/types"
 
 interface ProductClientProps {
   product: Product
@@ -261,7 +238,7 @@ export default function ProductClient({ product }: ProductClientProps) {
                           <h3 className="font-semibold">Contact Methods</h3>
                           <div className="flex items-center gap-2">
                               <Phone className="h-4 w-4" />
-                              <span className="text-sm">{product.phone}</span>
+                              <span className="text-sm">{product?.owner?.phone}</span>
                             </div>
                   <h3 className="font-semibold">Seller Name </h3>
                           <p className="text-sm text-muted-foreground">{product.owner.username}</p>

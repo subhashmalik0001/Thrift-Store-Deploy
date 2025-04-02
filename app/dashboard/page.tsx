@@ -26,12 +26,18 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import Footer from "@/components/footer/footer"
 import Header from "@/components/header/header"
 import { logout } from "@/store/auth-slice"
+import { Product } from "@/types/types"
+import axios from "axios"
+import { BACKEND_URL } from "@/config/config"
+import { toast } from "sonner"
 
 export default function Dashboard() {
   const router = useRouter()
   const dispatch = useAppDispatch()
   const { isAuthenticated, user } = useAppSelector((state) => state.auth)
-  const [activeTab, setActiveTab] = useState("overview")
+  const [activeTab, setActiveTab] = useState("overview");
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -48,6 +54,28 @@ export default function Dashboard() {
     router.push("/")
   }
 
+  useEffect(()=>{
+    const fetchUserProducts = async()=>{
+      setLoading(true);
+      try {
+        const res = await axios.get(`${BACKEND_URL}/api/user/product`,{
+          withCredentials : true,
+        });
+
+        console.log(res);
+        
+
+        setProducts(res?.data);
+      } catch (error) {
+        console.log(error);
+        
+        toast.error("Error while fetching your products");
+      }finally{
+        setLoading(false);
+      }
+    };
+    fetchUserProducts();
+  },[]);
   // Mock data for the dashboard
   const mockListings = [
     {
@@ -167,6 +195,14 @@ export default function Dashboard() {
       change: "+₹750 this month",
     },
   ]
+
+  if(loading){
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -292,11 +328,11 @@ export default function Dashboard() {
                     </CardHeader>
                     <CardContent>
                       <div className="space-y-4">
-                        {mockListings.slice(0, 2).map((listing) => (
+                        {products.slice(0, 2).map((listing) => (
                           <div key={listing.id} className="flex items-center gap-4">
                             <div className="relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-md">
                               <Image
-                                src={listing.image || "/placeholder.svg"}
+                                src={listing.images?.[0] || "/placeholder.svg"}
                                 alt={listing.title}
                                 fill
                                 className="object-cover"
@@ -306,7 +342,7 @@ export default function Dashboard() {
                               <h4 className="font-medium truncate">{listing.title}</h4>
                               <p className="text-sm text-muted-foreground">₹{listing.price}</p>
                               <div className="flex items-center mt-1">
-                                <Badge
+                                {/* <Badge
                                   className={`text-xs ${
                                     listing.status === "active"
                                       ? "bg-green-500"
@@ -320,7 +356,7 @@ export default function Dashboard() {
                                     : listing.status === "pending"
                                       ? "Pending"
                                       : "Sold"}
-                                </Badge>
+                                </Badge> */}
                                 <span className="text-xs text-muted-foreground ml-2">{listing.views} views</span>
                               </div>
                             </div>
@@ -446,14 +482,14 @@ export default function Dashboard() {
                     <Card>
                       <CardContent className="p-6">
                         <div className="space-y-6">
-                          {mockListings.map((listing) => (
+                          {products.map((listing) => (
                             <div
                               key={listing.id}
                               className="flex items-center gap-4 pb-4 border-b last:border-0 last:pb-0"
                             >
                               <div className="relative h-20 w-20 flex-shrink-0 overflow-hidden rounded-md">
                                 <Image
-                                  src={listing.image || "/placeholder.svg"}
+                                  src={listing.images?.[0] || "/placeholder.svg"}
                                   alt={listing.title}
                                   fill
                                   className="object-cover"
@@ -466,12 +502,12 @@ export default function Dashboard() {
                                     {listing.category}
                                   </Badge>
                                   <span className="text-xs text-muted-foreground">•</span>
-                                  <span className="text-xs text-muted-foreground">{listing.date}</span>
+                                  <span className="text-xs text-muted-foreground">{listing.createdAt.toLocaleString("IN")}</span>
                                 </div>
                                 <div className="flex items-center mt-2">
                                   <p className="font-semibold text-blue-600">₹{listing.price}</p>
                                   <span className="mx-2 text-muted-foreground">•</span>
-                                  <Badge
+                                  {/* <Badge
                                     className={`text-xs ${
                                       listing.status === "active"
                                         ? "bg-green-500"
@@ -485,7 +521,7 @@ export default function Dashboard() {
                                       : listing.status === "pending"
                                         ? "Pending"
                                         : "Sold"}
-                                  </Badge>
+                                  </Badge> */}
                                   <span className="text-xs text-muted-foreground ml-2">{listing.views} views</span>
                                 </div>
                               </div>
@@ -509,10 +545,10 @@ export default function Dashboard() {
                   </TabsContent>
 
                   <TabsContent value="active" className="mt-4">
-                    <Card>
+                    {/* <Card>
                       <CardContent className="p-6">
                         <div className="space-y-6">
-                          {mockListings
+                          {products
                             .filter((l) => l.status === "active")
                             .map((listing) => (
                               <div
@@ -559,7 +595,7 @@ export default function Dashboard() {
                             ))}
                         </div>
                       </CardContent>
-                    </Card>
+                    </Card> */}
                   </TabsContent>
 
                   {/* Similar structure for other tabs */}
