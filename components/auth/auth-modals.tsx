@@ -130,7 +130,7 @@ export function AuthModals() {
 
           <form onSubmit={handleLoginSubmit} className="space-y-4 py-4">
             <div className="space-y-2">
-              <Label htmlFor="email">Email (Use Offical @cuchd.in ID)</Label>
+              <Label htmlFor="email">Email</Label>
               <div className="relative">
                 <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                 <Input
@@ -283,7 +283,7 @@ export function AuthModals() {
               </div>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="signup-email">Email (Use Offical @cuchd.in ID)</Label>
+              <Label htmlFor="signup-email">Email</Label>
               <div className="relative">
                 <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                 <Input
