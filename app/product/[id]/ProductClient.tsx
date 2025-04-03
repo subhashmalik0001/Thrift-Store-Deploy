@@ -238,7 +238,7 @@ export default function ProductClient({ product }: ProductClientProps) {
                           <h3 className="font-semibold">Contact Methods</h3>
                           <div className="flex items-center gap-2">
                               <Phone className="h-4 w-4" />
-                              <span className="text-sm">{product?.owner?.phone}</span>
+                              <span className="text-sm">{product.phone}</span>
                             </div>
                   <h3 className="font-semibold">Seller Name </h3>
                           <p className="text-sm text-muted-foreground">{product.owner.username}</p>
