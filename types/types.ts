@@ -9,7 +9,8 @@ export interface Product {
       username: string
       email: string
       phone: string
-    }
+    },
+    phone : string
     location: string
     postedDate: string
     views: number
