@@ -1,7 +1,8 @@
 // Service to handle authentication API calls
+import { BACKEND_URL } from "@/config/config";
 import axios from "axios";
 
-const API_URL = "https://thrift-store-backend-u1vz.onrender.com/api/auth";
+const API_URL = `${BACKEND_URL}/api/auth`;
 
 // Create axios instance with default config
 const axiosInstance = axios.create({

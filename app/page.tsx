@@ -110,13 +110,6 @@ export default function HomePage() {
     </Card>
   );
 
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
-      </div>
-    );
-  }
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -382,43 +375,55 @@ export default function HomePage() {
                 <TabsTrigger value="ending" className="px-6 py-2 text-sm font-medium">Ending Soon</TabsTrigger>
               </TabsList>
               <TabsContent value="recent" className="space-y-4">
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-                  {recentProducts.map((product) => (
-                    <Card key={product._id} className="overflow-hidden group hover:shadow-xl hover:shadow-blue-500/10 transition-all duration-300 hover:scale-105">
-                      <div className="relative">
-                        <Image
-                          src={product.images?.[0] || "/placeholder.png"}
-                          alt={`${product.title} image`}
-                          width={300}
-                          height={200}
-                          className="w-full h-48 object-cover group-hover:opacity-95 transition-opacity"
-                        />
-                        <Badge className="absolute top-2 right-2 bg-orange-500 hover:bg-orange-600">Sale</Badge>
-                      </div>
-                      <CardContent className="p-6">
-                        <div className="flex justify-between items-start mb-3">
-                          <h3 className="font-semibold text-lg group-hover:text-blue-600 transition-colors">{product.title}</h3>
-                          <span className="font-bold text-blue-600 text-lg">₹{product.price}</span>
-                        </div>
-                        <p className="text-sm text-muted-foreground mb-4">
-                          {product.description}
-                        </p>
-                        <div className="flex items-center justify-between mb-4">
-                          <Badge variant="outline" className="text-xs font-medium">
-                            {product.category}
-                          </Badge>
-                          <span className="text-xs text-muted-foreground">Posted {formatDate(product.createdAt)}</span>
-                        </div>
-                        <Button
-                          className="w-full bg-blue-600 hover:bg-blue-700 transition-colors shadow-lg shadow-blue-500/20"
-                          onClick={() => (window.location.href = `/product/${product._id}`)}
-                        >
-                          View Product
-                        </Button>
-                      </CardContent>
-                    </Card>
-                  ))}
+
+                {
+                  isLoading ? (
+                    <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+      </div>
+                  ) : (
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+                      {recentProducts.map((product) => (
+                        <Card key={product._id} className="overflow-hidden group hover:shadow-xl hover:shadow-blue-500/10 transition-all duration-300 hover:scale-105">
+                          <div className="relative">
+                            <Image
+                              src={product.images?.[0] || "/placeholder.png"}
+                              alt={`${product.title} image`}
+                              width={300}
+                              height={200}
+                              className="w-full h-48 object-cover group-hover:opacity-95 transition-opacity"
+                            />
+                            <Badge className="absolute top-2 right-2 bg-orange-500 hover:bg-orange-600">Sale</Badge>
+                          </div>
+                          <CardContent className="p-6">
+                            <div className="flex justify-between items-start mb-3 h-20 overflow-hidden">
+                              <h3 className="font-semibold text-lg group-hover:text-blue-600 transition-colors">{product.title}</h3>
+                              <span className="font-bold text-blue-600 text-lg">₹{product.price}</span>
+                            </div>
+                            <div className="h-36 overflow-hidden">
+                            <p className="text-sm text-muted-foreground mb-4">
+                              {product.description}
+                            </p>
+                            </div>
+                            <div className="flex items-center justify-between mb-4">
+                              <Badge variant="outline" className="text-xs font-medium">
+                                {product.category}
+                              </Badge>
+                              <span className="text-xs text-muted-foreground">Posted {formatDate(product.createdAt)}</span>
+                            </div>
+                            <Button
+                              className="w-full bg-blue-600 hover:bg-blue-700 transition-colors shadow-lg shadow-blue-500/20"
+                              onClick={() => (window.location.href = `/product/${product._id}`)}
+                            >
+                              View Product
+                            </Button>
+                          </CardContent>
+                        </Card>
+                      ))}
                 </div>
+                  )
+                }
               </TabsContent>
               <TabsContent value="trending" className="space-y-4">
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">

@@ -2,6 +2,8 @@ import axios from "axios";
 import { BACKEND_URL } from "@/config/config";
 
 // Create axios instance with default config
+console.log('BACKEND_URL:', BACKEND_URL);
+
 const axiosInstance = axios.create({
   baseURL: `${BACKEND_URL}/api/product`,
   withCredentials: true,
