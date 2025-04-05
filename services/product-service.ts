@@ -30,7 +30,9 @@ export interface Product {
 export const productService = {
   getAllProducts: async (page: number = 1, limit: number = 8) => {
     try {
-      const response = await axiosInstance.get(`?page=${page}&limit=${limit}`);
+      const response = await axiosInstance.get(`?page=${page}&limit=${limit}`,{
+        withCredentials: true,
+      });
       return response.data;
     } catch (error) {
       console.error("Error fetching products:", error);

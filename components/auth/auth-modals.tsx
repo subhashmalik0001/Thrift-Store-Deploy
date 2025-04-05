@@ -23,9 +23,29 @@ import {
 import { Separator } from "@/components/ui/separator"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { useToast } from "@/components/ui/use-toast"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 import { useAppDispatch, useAppSelector } from "@/store/hooks"
 import { login, register, clearError } from "@/store/auth-slice"
+
+const colleges = [
+  "Chandigarh University",
+  "NIT Hamirpur",
+  "IIT Delhi",
+  "IIT Bombay",
+  "IIT Kanpur",
+  "IIT Madras",
+  "IIT Kharagpur",
+  "IIT Roorkee",
+  "IIT Guwahati",
+  "IIT Hyderabad",
+  "NIT Trichy",
+  "NIT Surathkal",
+  "NIT Warangal",
+  "NIT Calicut",
+  "NIT Rourkela",
+  "Other"
+]
 
 export function AuthModals() {
   const router = useRouter()
@@ -43,6 +63,8 @@ export function AuthModals() {
   const [signupPassword, setSignupPassword] = useState("")
   const [termsAccepted, setTermsAccepted] = useState(false)
   const [rememberMe, setRememberMe] = useState(false)
+  const [signupCollege, setSignupCollege] = useState("")
+  const [otherCollege, setOtherCollege] = useState("")
 
   useEffect(() => {
     const handleOpenLogin = () => setLoginOpen(true)
@@ -96,11 +118,14 @@ export function AuthModals() {
   const handleSignupSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
+    const college = signupCollege === "Other" ? otherCollege : signupCollege
+
     await dispatch(
       register({
         username: signupName,
         email: signupEmail,
         password: signupPassword,
+        college,
       }),
     )
   }
@@ -282,6 +307,36 @@ export function AuthModals() {
                 />
               </div>
             </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="signup-college">College</Label>
+              <Select value={signupCollege} onValueChange={setSignupCollege}>
+                <SelectTrigger id="signup-college">
+                  <SelectValue placeholder="Select your college" />
+                </SelectTrigger>
+                <SelectContent className="bg-white">
+                  {colleges.map((college) => (
+                    <SelectItem key={college} value={college}>
+                      {college}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {signupCollege === "Other" && (
+              <div className="space-y-2">
+                <Label htmlFor="other-college">College Name</Label>
+                <Input
+                  id="other-college"
+                  placeholder="Enter your college name"
+                  value={otherCollege}
+                  onChange={(e) => setOtherCollege(e.target.value)}
+                  required
+                />
+              </div>
+            )}
+
             <div className="space-y-2">
               <Label htmlFor="signup-email">Email</Label>
               <div className="relative">
@@ -403,4 +458,3 @@ export function AuthModals() {
     </>
   )
 }
-
