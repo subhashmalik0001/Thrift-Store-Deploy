@@ -21,5 +21,7 @@ export interface Product {
     images: string[]
     contactMethod: "phone" | "email" | "both"
     meetingLocation: string;
-    createdAt : Date
+    createdAt : Date,
+    saletype : string,
+    email : string,
   }

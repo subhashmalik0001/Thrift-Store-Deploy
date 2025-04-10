@@ -26,6 +26,8 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { BACKEND_URL } from "@/config/config";
 import { useRouter } from "next/navigation";
+import { useAppSelector } from "@/store/hooks";
+import { toast } from "sonner";
 interface Product {
   _id: string;
   title: string;
@@ -54,11 +56,20 @@ interface Product {
 
 export default function BrowsePage() {
   const [products, setProducts] = useState<Product[]>([]);
+  const { isAuthenticated, user } = useAppSelector((state) => state.auth)
 
   const [totalPages, setTotalPages] = useState(1);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
+  const [college, setCollege] = useState<string | null>(null);
   const router = useRouter();
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      toast.error("Please login to view this page");
+      router.push("/")
+    }
+  }, [isAuthenticated, router])
 
   useEffect(() => {
     const getProducts = async () => {
@@ -66,11 +77,14 @@ export default function BrowsePage() {
       try {
         const res = await axios.get(
           `${BACKEND_URL}/api/product?page=${page}&limit=8`
-        );
+       ,{
+        withCredentials : true,
+       } );
 
         if (res?.data?.success) {
           setProducts(res?.data?.data);
           setTotalPages(res?.data?.totalPages);
+          setCollege(res?.data?.college);
         }
       } catch (error) {
         console.log(error);
@@ -213,7 +227,8 @@ export default function BrowsePage() {
 
             <div className="md:col-span-3">
               <div className="flex justify-between items-center mb-4">
-                <h2 className="text-xl font-bold">Browse Products</h2>
+              
+                <h2 className="text-xl font-bold">Browse Products : ({college})</h2>
                 <div className="text-sm text-muted-foreground">
                   Showing {page} of {totalPages} results
                 </div>
