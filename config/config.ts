@@ -1,1 +1,1 @@
-export const BACKEND_URL=process.env.NEXT_PUBLIC_API_URL || "https://thrift-store.arshpreet.site";
+export const BACKEND_URL="https://thrift-store-backend-u1vz.onrender.com";
