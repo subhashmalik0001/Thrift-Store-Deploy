@@ -14,6 +14,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { AutoSlider } from "@/components/AutoSlider"
+import { useAppDispatch, useAppSelector } from "@/store/hooks"
 
 interface Product {
   _id: string;
@@ -30,10 +31,14 @@ export default function HomePage() {
   const [trendingProducts, setTrendingProducts] = useState<Product[]>([]);
   const [endingProducts, setEndingProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const { isAuthenticated } = useAppSelector((state) => state.auth);
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
+
+        if(!isAuthenticated) return;
+        
         setIsLoading(true);
         // Fetch recent products
         const recentRes = await productService.getRecentProducts();
@@ -61,7 +66,7 @@ export default function HomePage() {
     };
 
     fetchProducts();
-  }, []);
+  }, [isAuthenticated]);
 
   const formatDate = (date: Date) => {
     const now = new Date();
@@ -368,74 +373,104 @@ export default function HomePage() {
               </div>
             </div>
 
-            <Tabs defaultValue="recent" className="w-full">
-              <TabsList className="flex justify-center mb-8">
-                <TabsTrigger value="recent" className="px-6 py-2 text-sm font-medium">Recently Added</TabsTrigger>
-                <TabsTrigger value="trending" className="px-6 py-2 text-sm font-medium">Trending</TabsTrigger>
-                <TabsTrigger value="ending" className="px-6 py-2 text-sm font-medium">Ending Soon</TabsTrigger>
-              </TabsList>
-              <TabsContent value="recent" className="space-y-4">
-
-                {
-                  isLoading ? (
-                    <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+            {!isAuthenticated ? (
+  <div className="relative">
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 blur-sm pointer-events-none select-none opacity-70">
+      {/* Dummy cards (can be replaced with real-looking placeholders) */}
+      {[1, 2, 3, 4].map((_, idx) => (
+        <Card key={idx} className="overflow-hidden">
+          <div className="h-48 bg-gray-300 animate-pulse" />
+          <CardContent className="p-6">
+            <div className="h-6 bg-gray-200 mb-3 animate-pulse" />
+            <div className="h-4 bg-gray-200 mb-2 animate-pulse" />
+            <div className="h-4 bg-gray-200 w-1/2 animate-pulse" />
+          </CardContent>
+        </Card>
+      ))}
+    </div>
+    <div className="absolute inset-0 flex items-center justify-center">
+      <div className="bg-white bg-opacity-80 backdrop-blur-sm p-6 rounded-xl shadow-lg text-center max-w-md mx-auto">
+        <h2 className="text-xl font-semibold mb-2">Please log in to view products</h2>
+        <p className="text-gray-600 text-sm">You must be signed in to access product details and features.</p>
+        <Button
+          className="mt-4 bg-blue-600 hover:bg-blue-700"
+          onClick={() => window.dispatchEvent(new CustomEvent("open-login"))}
+        >
+          Login
+        </Button>
       </div>
-                  ) : (
+    </div>
+  </div>
+) : (
+  <Tabs defaultValue="recent" className="w-full">
+    <TabsList className="flex justify-center mb-8">
+      <TabsTrigger value="recent" className="px-6 py-2 text-sm font-medium">Recently Added</TabsTrigger>
+      <TabsTrigger value="trending" className="px-6 py-2 text-sm font-medium">Trending</TabsTrigger>
+      <TabsTrigger value="ending" className="px-6 py-2 text-sm font-medium">Ending Soon</TabsTrigger>
+    </TabsList>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-                      {recentProducts.map((product) => (
-                        <Card key={product._id} className="overflow-hidden group hover:shadow-xl hover:shadow-blue-500/10 transition-all duration-300 hover:scale-105">
-                          <div className="relative">
-                            <Image
-                              src={product.images?.[0] || "/placeholder.png"}
-                              alt={`${product.title} image`}
-                              width={300}
-                              height={200}
-                              className="w-full h-48 object-cover group-hover:opacity-95 transition-opacity"
-                            />
-                            <Badge className="absolute top-2 right-2 bg-orange-500 hover:bg-orange-600">Sale</Badge>
-                          </div>
-                          <CardContent className="p-6">
-                            <div className="flex justify-between items-start mb-3 h-20 overflow-hidden">
-                              <h3 className="font-semibold text-lg group-hover:text-blue-600 transition-colors">{product.title}</h3>
-                              <span className="font-bold text-blue-600 text-lg">₹{product.price}</span>
-                            </div>
-                            <div className="h-36 overflow-hidden">
-                            <p className="text-sm text-muted-foreground mb-4">
-                              {product.description}
-                            </p>
-                            </div>
-                            <div className="flex items-center justify-between mb-4">
-                              <Badge variant="outline" className="text-xs font-medium">
-                                {product.category}
-                              </Badge>
-                              <span className="text-xs text-muted-foreground">Posted {formatDate(product.createdAt)}</span>
-                            </div>
-                            <Button
-                              className="w-full bg-blue-600 hover:bg-blue-700 transition-colors shadow-lg shadow-blue-500/20"
-                              onClick={() => (window.location.href = `/product/${product._id}`)}
-                            >
-                              View Product
-                            </Button>
-                          </CardContent>
-                        </Card>
-                      ))}
+    <TabsContent value="recent" className="space-y-4">
+      {isLoading ? (
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+          {recentProducts.map((product) => (
+            <Card key={product._id} className="overflow-hidden group hover:shadow-xl hover:shadow-blue-500/10 transition-all duration-300 hover:scale-105">
+              <div className="relative">
+                <Image
+                  src={product.images?.[0] || "/placeholder.png"}
+                  alt={`${product.title} image`}
+                  width={300}
+                  height={200}
+                  className="w-full h-48 object-cover group-hover:opacity-95 transition-opacity"
+                />
+                <Badge className="absolute top-2 right-2 bg-orange-500 hover:bg-orange-600">Sale</Badge>
+              </div>
+              <CardContent className="p-6">
+                <div className="flex justify-between items-start mb-3 h-20 overflow-hidden">
+                  <h3 className="font-semibold text-lg group-hover:text-blue-600 transition-colors">{product.title}</h3>
+                  <span className="font-bold text-blue-600 text-lg">₹{product.price}</span>
                 </div>
-                  )
-                }
-              </TabsContent>
-              <TabsContent value="trending" className="space-y-4">
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                  {trendingProducts.map(renderProductCard)}
+                <div className="h-36 overflow-hidden">
+                  <p className="text-sm text-muted-foreground mb-4">
+                    {product.description}
+                  </p>
                 </div>
-              </TabsContent>
-              <TabsContent value="ending" className="space-y-4">
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                  {endingProducts.map(renderProductCard)}
+                <div className="flex items-center justify-between mb-4">
+                  <Badge variant="outline" className="text-xs font-medium">
+                    {product.category}
+                  </Badge>
+                  <span className="text-xs text-muted-foreground">Posted {formatDate(product.createdAt)}</span>
                 </div>
-              </TabsContent>
-            </Tabs>
+                <Button
+                  className="w-full bg-blue-600 hover:bg-blue-700 transition-colors shadow-lg shadow-blue-500/20"
+                  onClick={() => (window.location.href = `/product/${product._id}`)}
+                >
+                  View Product
+                </Button>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
+    </TabsContent>
+
+    <TabsContent value="trending" className="space-y-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        {trendingProducts.map(renderProductCard)}
+      </div>
+    </TabsContent>
+
+    <TabsContent value="ending" className="space-y-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        {endingProducts.map(renderProductCard)}
+      </div>
+    </TabsContent>
+  </Tabs>
+)}
+
           </div>
         </section>
 

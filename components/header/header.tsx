@@ -17,6 +17,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { toast } from "sonner"
+import axios from "axios"
+import { BACKEND_URL } from "@/config/config"
 
 const Header = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
@@ -24,9 +27,15 @@ const Header = () => {
   const dispatch = useAppDispatch()
   const router = useRouter()
 
-  const handleLogout = () => {
-    dispatch(logout())
-    router.push("/")
+  const handleLogout = async () => {
+    try {
+      await axios.post(`${BACKEND_URL}/api/auth/logout`, {}, { withCredentials: true });
+
+      dispatch(logout())
+      router.push("/")
+    } catch (error) {
+      toast.error("Logout failed. Please try again.")
+    }
   }
 
   // Get user initials for avatar fallback
